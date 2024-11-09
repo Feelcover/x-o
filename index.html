@@ -50,7 +50,7 @@
       ]);
       const [currentStep, setCurrentStep] = React.useState(SYMBOL_X);
       const [winnerSequence, setWinnerSequence] = React.useState();
-      const [noWinner, setNoWinner] = React.useState(false);
+      const noWinner = !winnerSequence && cells.filter(value => value).length === 9
 
       const getSymbolClassName = (symbol) => {
         if (symbol === SYMBOL_X) return "symbol--x";
@@ -79,34 +79,16 @@
       };
       const winnerSymbol = winnerSequence ? cells[winnerSequence[0]] : undefined
       const restartGame = () =>{
-        setCells([
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-      ])
+        setCells(Array.from({length:9},()=>null))
       setCurrentStep(SYMBOL_X)
       setWinnerSequence()
       }
-      React.useEffect(() => {
-        if (cells.includes(null)) {
-          return
-        }else{
-          setNoWinner(true)
-        }
 
-      }, [cells]);
 
       return (
         <div className="game">
           <div className="game-info">
-           {}
-           {noWinner ? "Ничья" : winnerSequence ? "Победитель" : "Ход"}
+           {noWinner ? "Ничья" : winnerSequence ? "Победитель " : "Ход "}
             {!noWinner && RenderSymbol(winnerSymbol ?? currentStep)}
           </div>
           <div className="game-field">
@@ -115,7 +97,7 @@
               return (
                 <button
                   key={i}
-                  className={`${isWinner ? "cell--win" : ""}`}
+                  className={`button ${isWinner ? "cell--win" : ""}`}
                   onClick={() => handleClick(i)}
                 >
                   {symbol ? RenderSymbol(symbol) : null}
@@ -146,6 +128,7 @@
     }
     .game-info {
       margin-bottom: 10px;
+      
     }
     .game-field {
       display: grid;
@@ -153,8 +136,14 @@
       grid-template-rows: repeat(3, 30px);
       padding: 1px 0 0 1px;
     }
+    .button{
+      background-color: white;
+      border: 1px solid black;
+    }
+
     .symbol--x {
       color: red;
+
     }
     .symbol--o {
       color: green;
