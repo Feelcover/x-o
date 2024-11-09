@@ -50,6 +50,7 @@
       ]);
       const [currentStep, setCurrentStep] = React.useState(SYMBOL_X);
       const [winnerSequence, setWinnerSequence] = React.useState();
+      const [noWinner, setNoWinner] = React.useState(false);
 
       const getSymbolClassName = (symbol) => {
         if (symbol === SYMBOL_X) return "symbol--x";
@@ -77,12 +78,36 @@
         setWinnerSequence(winner);
       };
       const winnerSymbol = winnerSequence ? cells[winnerSequence[0]] : undefined
+      const restartGame = () =>{
+        setCells([
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+      ])
+      setCurrentStep(SYMBOL_X)
+      setWinnerSequence()
+      }
+      React.useEffect(() => {
+        if (cells.includes(null)) {
+          return
+        }else{
+          setNoWinner(true)
+        }
+
+      }, [cells]);
 
       return (
         <div className="game">
           <div className="game-info">
-           {winnerSequence ? "Победитель" : "Ход"}
-            {RenderSymbol(winnerSymbol ?? currentStep)}
+           {}
+           {noWinner ? "Ничья" : winnerSequence ? "Победитель" : "Ход"}
+            {!noWinner && RenderSymbol(winnerSymbol ?? currentStep)}
           </div>
           <div className="game-field">
             {cells.map((symbol, i) => {
@@ -98,6 +123,7 @@
               );
             })}
           </div>
+          <button onClick={restartGame}>Сброс</button>
         </div>
       );
     };
