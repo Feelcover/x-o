@@ -50,21 +50,9 @@
       ]);
       const [currentStep, setCurrentStep] = React.useState(SYMBOL_X);
       const [winnerSequence, setWinnerSequence] = React.useState();
-      const noWinner = !winnerSequence && cells.filter(value => value).length === 9
+      const noWinner =
+        !winnerSequence && cells.filter((value) => value).length === 9;
 
-      const getSymbolClassName = (symbol) => {
-        if (symbol === SYMBOL_X) return "symbol--x";
-        if (symbol === SYMBOL_O) return "symbol--o";
-        return "";
-      };
-
-      const RenderSymbol = (symbol) => {
-        return (
-          <span className={`symbol ${getSymbolClassName(symbol)}`}>
-            {symbol}
-          </span>
-        );
-      };
       const handleClick = (i) => {
         if (cells[i] || winnerSequence) return;
 
@@ -77,38 +65,74 @@
         setCurrentStep(currentStep === SYMBOL_O ? SYMBOL_X : SYMBOL_O);
         setWinnerSequence(winner);
       };
-      const winnerSymbol = winnerSequence ? cells[winnerSequence[0]] : undefined
-      const restartGame = () =>{
-        setCells(Array.from({length:9},()=>null))
-      setCurrentStep(SYMBOL_X)
-      setWinnerSequence()
-      }
-
+      const winnerSymbol = winnerSequence
+        ? cells[winnerSequence[0]]
+        : undefined;
+      const restartGame = () => {
+        setCells(Array.from({ length: 9 }, () => null));
+        setCurrentStep(SYMBOL_X);
+        setWinnerSequence();
+      };
 
       return (
         <div className="game">
-          <div className="game-info">
-           {noWinner ? "Ничья" : winnerSequence ? "Победитель " : "Ход "}
-            {!noWinner && RenderSymbol(winnerSymbol ?? currentStep)}
-          </div>
+          <GameInfo
+            noWinner={noWinner}
+            winnerSymbol={winnerSymbol}
+            currentStep={currentStep}
+          />
           <div className="game-field">
             {cells.map((symbol, i) => {
-              const isWinner = winnerSequence?.includes(i);
-              return (
-                <button
-                  key={i}
-                  className={`button ${isWinner ? "cell--win" : ""}`}
-                  onClick={() => handleClick(i)}
-                >
-                  {symbol ? RenderSymbol(symbol) : null}
-                </button>
-              );
+             return <GameCell
+                symbol={symbol}
+                isWinner={winnerSequence?.includes(i)}
+                onClick={()=>handleClick(i)}
+              />;
             })}
           </div>
           <button onClick={restartGame}>Сброс</button>
         </div>
       );
     };
+
+    const GameSymbol = ({ symbol }) => {
+      const getSymbolClassName = (symbol) => {
+        if (symbol === SYMBOL_X) return "symbol--x";
+        if (symbol === SYMBOL_O) return "symbol--o";
+        return "";
+      };
+      return <span className={`symbol ${getSymbolClassName()}`}>{symbol}</span>;
+    };
+
+    const GameInfo = ({ noWinner, winnerSymbol, currentStep }) => {
+      if (noWinner) {
+        return <div className="game-info">Ничья</div>;
+      }
+      if (winnerSymbol) {
+        return (
+          <div className="game-info">
+            Победитель: <GameSymbol symbol={winnerSymbol} />
+          </div>
+        );
+      }
+
+      return (
+        <div className="game-info">
+          Ход: <GameSymbol symbol={currentStep} />
+        </div>
+      );
+    };
+    const GameCell = ({ isWinner, onClick, symbol }) => {
+      return (
+        <button
+          className={`button ${isWinner ? "cell--win" : ""}`}
+          onClick={onClick}
+        >
+          {symbol ? <GameSymbol symbol={symbol} /> : null}
+        </button>
+      );
+    };
+
     const root = ReactDOM.createRoot(document.getElementById("root"));
     root.render(<App />);
   </script>
@@ -128,7 +152,6 @@
     }
     .game-info {
       margin-bottom: 10px;
-      
     }
     .game-field {
       display: grid;
@@ -136,14 +159,13 @@
       grid-template-rows: repeat(3, 30px);
       padding: 1px 0 0 1px;
     }
-    .button{
+    .button {
       background-color: white;
       border: 1px solid black;
     }
 
     .symbol--x {
       color: red;
-
     }
     .symbol--o {
       color: green;
