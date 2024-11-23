@@ -36,7 +36,7 @@
       }
     };
 
-    const App = () => {
+    function useGameState() {
       const [cells, setCells] = React.useState([
         null,
         null,
@@ -50,8 +50,6 @@
       ]);
       const [currentStep, setCurrentStep] = React.useState(SYMBOL_X);
       const [winnerSequence, setWinnerSequence] = React.useState();
-      const noWinner =
-        !winnerSequence && cells.filter((value) => value).length === 9;
 
       const handleClick = (i) => {
         if (cells[i] || winnerSequence) return;
@@ -65,14 +63,25 @@
         setCurrentStep(currentStep === SYMBOL_O ? SYMBOL_X : SYMBOL_O);
         setWinnerSequence(winner);
       };
-      const winnerSymbol = winnerSequence
-        ? cells[winnerSequence[0]]
-        : undefined;
+
       const restartGame = () => {
         setCells(Array.from({ length: 9 }, () => null));
         setCurrentStep(SYMBOL_X);
         setWinnerSequence();
       };
+
+      const noWinner =
+        !winnerSequence && cells.filter((value) => value).length === 9;
+
+      const winnerSymbol = winnerSequence
+        ? cells[winnerSequence[0]]
+        : undefined;
+
+        return {cells, currentStep, winnerSequence, handleClick, restartGame, winnerSymbol, noWinner}
+    }
+
+    const App = () => {
+     const {cells, currentStep, winnerSequence, handleClick, restartGame, winnerSymbol, noWinner} = useGameState()
 
       return (
         <div className="game">
@@ -83,11 +92,13 @@
           />
           <div className="game-field">
             {cells.map((symbol, i) => {
-             return <GameCell
-                symbol={symbol}
-                isWinner={winnerSequence?.includes(i)}
-                onClick={()=>handleClick(i)}
-              />;
+              return (
+                <GameCell
+                  symbol={symbol}
+                  isWinner={winnerSequence?.includes(i)}
+                  onClick={() => handleClick(i)}
+                />
+              );
             })}
           </div>
           <button onClick={restartGame}>Сброс</button>
@@ -175,24 +186,4 @@
     }
   </style>
 </body>
-<!-- <button className="cell cell--win">
-    <span className="symbol symbol--x">X</span>
-  </button>
-  <button className="cell">
-    <span className="symbol symbol--o">O</span>
-  </button>
-  <button className="cell"></button>
-  <button className="cell cell--win">
-    <span className="symbol symbol--x">X</span>
-  </button>
-  <button className="cell"></button>
-  <button className="cell">
-    <span className="symbol symbol--o">O</span>
-  </button>
-  <button className="cell cell--win">
-    <span className="symbol symbol--x">X</span>
-  </button>
-  <button className="cell">
-    <span className="symbol symbol--o">O</span>
-  </button>
-  <button className="cell"></button> -->
+
